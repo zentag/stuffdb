@@ -19,7 +19,6 @@
     "vite": "^6.1.0"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.48.1",
-    "vite-plugin-sass": "^0.1.0"
+    "@supabase/supabase-js": "^2.48.1"
   }
 }
