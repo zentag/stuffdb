@@ -1,15 +1,22 @@
 <script lang="ts">
-	import { auth } from "$lib/supabase";
+	import { auth, supabase } from "$lib/supabase";
 	import Login from "$lib/components/login.svelte";
+	let selectedTable = $state("Select component...");
 </script>
 
-<h1>Welcome to SvelteKit</h1>
+<h1>StuffDB</h1>
 {#await auth.getUser() then user}
-	<p>{JSON.stringify(user)}</p>
 	{#if user.data.user}
-		<p>
-			{JSON.stringify(user)}
-		</p>
+		{#await supabase.rpc("list_tables") then tables}
+			<select name="select" aria-label="Select" required value={selectedTable}>
+				<option>{selectedTable}</option>
+				{#each tables.data as table}
+					<option>
+						{table.tablename}
+					</option>
+				{/each}
+			</select>
+		{/await}
 	{:else}
 		<Login />
 	{/if}
