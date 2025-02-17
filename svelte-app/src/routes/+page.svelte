@@ -1,2 +1,10 @@
+<script lang="ts">
+	import { db } from "$lib/db";
+</script>
+
 <h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
+{#await db.from("capacitors").select("*") then data}
+	<p>
+		{JSON.stringify(data.data[0])}
+	</p>
+{/await}
