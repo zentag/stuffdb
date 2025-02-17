@@ -1,10 +1,16 @@
 <script lang="ts">
-	import { supabase } from "$lib/supabase";
+	import { auth } from "$lib/supabase";
+	import Login from "$lib/components/login.svelte";
 </script>
 
 <h1>Welcome to SvelteKit</h1>
-{#await supabase.from("capacitors").select("*") then data}
-	<p>
-		{JSON.stringify(data.data[0])}
-	</p>
+{#await auth.getUser() then user}
+	<p>{JSON.stringify(user)}</p>
+	{#if user.data.user}
+		<p>
+			{JSON.stringify(user)}
+		</p>
+	{:else}
+		<Login />
+	{/if}
 {/await}
