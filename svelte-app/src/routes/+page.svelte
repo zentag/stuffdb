@@ -3,12 +3,14 @@
 	import Login from "$lib/components/login.svelte";
 	let selectedTable = $state("");
 	let newTableName = $state("");
+	let filters = $state({});
 	async function newTable() {
 		await supabase.rpc("create_table", {
 			name: newTableName,
 		});
 		selectedTable = "";
 	}
+	$inspect(filters);
 </script>
 
 {#await auth.getUser() then user}
@@ -39,11 +41,23 @@
 							type="number"
 							placeholder={column.name + ": min"}
 							class="number"
+							onchange={(e) => {
+								filters[column.name] = [
+									e.target.value,
+									filters[column.name]?.[1] || null,
+								];
+							}}
 						/>
 						<input
 							type="number"
 							placeholder={column.name + ": max"}
 							class="number"
+							onchange={(e) => {
+								filters[column.name] = [
+									filters[column.name]?.[0] || null,
+									e.target.value,
+								];
+							}}
 						/>
 					{:else if column.type === "text" && column.name !== "name"}
 						<details class="dropdown">
@@ -93,6 +107,9 @@
 		<button>Submit</button>
 	</form>
 {/if}
+<div>
+	{#if selectedTable === "all"}{/if}
+</div>
 
 <style lang="sass">
 #options
