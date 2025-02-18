@@ -31,6 +31,9 @@
 				<option>+ New thing type</option>
 			</select>
 		{/await}
+		{#await supabase.rpc("get_cols", { tablename: selectedTable }) then table}
+			{#each table.data as column}{/each}
+		{/await}
 	{:else}
 		<Login />
 	{/if}
