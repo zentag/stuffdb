@@ -37,25 +37,51 @@
 			<div id="options">
 				{#each table.data as column}
 					{#if column.type === "smallint"}
+						{#if filters[column.name]?.[2]}
+							<input
+								type="number"
+								placeholder={column.name + ": min"}
+								class="number"
+								onchange={(e) => {
+									filters[column.name] = [
+										e.target.value,
+										filters[column.name]?.[1] || null,
+									];
+								}}
+							/>
+							<input
+								type="number"
+								placeholder={column.name + ": max"}
+								class="number"
+								onchange={(e) => {
+									filters[column.name] = [
+										filters[column.name]?.[0] || null,
+										e.target.value,
+									];
+								}}
+							/>
+						{:else}
+							<input
+								type="number"
+								placeholder={column.name}
+								onchange={(e) =>
+									(filters[column.name] = [
+										e.target.value,
+										e.target.value,
+										filters[column.name]?.[2],
+									])}
+							/>
+						{/if}
+
+						<p>Range?</p>
 						<input
-							type="number"
-							placeholder={column.name + ": min"}
-							class="number"
+							type="checkbox"
+							class="rangecheck"
 							onchange={(e) => {
 								filters[column.name] = [
-									e.target.value,
-									filters[column.name]?.[1] || null,
-								];
-							}}
-						/>
-						<input
-							type="number"
-							placeholder={column.name + ": max"}
-							class="number"
-							onchange={(e) => {
-								filters[column.name] = [
-									filters[column.name]?.[0] || null,
-									e.target.value,
+									filters[column.name]?.[0],
+									filters[column.name]?.[1],
+									filters[column.name]?.[2] ? false : true,
 								];
 							}}
 						/>
@@ -85,14 +111,16 @@
 						<input type="text" placeholder={column.name} />
 					{/if}
 				{/each}
-				{#if table.data[0]}
-					<button>New column</button>
+			</div>
+			<div class="searchdiv">
+				{#if selectedTable !== "New thing type"}
+					<input placeholder="search..." class="search" />
+					{#if table.data[0]}
+						<button>New column</button>
+					{/if}
 				{/if}
 			</div>
 		{/await}
-		{#if selectedTable !== "New thing type"}
-			<input placeholder="search..." class="search" />
-		{/if}
 	{:else}
 		<h1>StuffDB</h1>
 		<Login />
@@ -112,15 +140,20 @@
 </div>
 
 <style lang="sass">
+.searchdiv 
+  display: flex 
+  place-content: space-between
+  width: 100vw
+button
+  margin-right: 1rem
 #options
   display: flex 
   flex-direction: row
   flex-columns: 2
   flex-wrap: wrap
+  align-items: center
 input[type=number], input[type=text], select
   width:12rem
-button 
-  height: 3.18rem
 p:not(.checkboxlabel), select, input:not([type=checkbox]), button, h1, details
   margin-top: 1rem
   margin-left: 1rem
@@ -137,6 +170,9 @@ label > p
 label.checkboxlabel 
   display: flex
   align-items: center
+.rangecheck
+  margin-left: 1rem 
+  margin-top: 0rem !important
 input[type=checkbox]
   margin-top: .4rem
 </style>
