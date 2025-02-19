@@ -11,6 +11,20 @@
 		selectedTable = "";
 	}
 	$inspect(filters);
+	let supabaseQuery = $state();
+	$effect(() => {
+		let buildingQuery = supabase.from(selectedTable).select();
+		Object.keys(filters).forEach((key) => {
+			const filter = filters[key];
+			if (filter[0]) {
+				buildingQuery = buildingQuery.gte(key, filter[0]);
+			}
+			if (filter[1]) {
+				buildingQuery = buildingQuery.lte(key, filter[1]);
+			}
+		});
+		supabaseQuery = buildingQuery;
+	});
 </script>
 
 {#await auth.getUser() then user}
@@ -46,6 +60,7 @@
 									filters[column.name] = [
 										e.target.value,
 										filters[column.name]?.[1] || null,
+										true,
 									];
 								}}
 							/>
@@ -57,6 +72,7 @@
 									filters[column.name] = [
 										filters[column.name]?.[0] || null,
 										e.target.value,
+										true,
 									];
 								}}
 							/>
@@ -64,12 +80,17 @@
 							<input
 								type="number"
 								placeholder={column.name}
-								onchange={(e) =>
-									(filters[column.name] = [
-										e.target.value,
-										e.target.value,
-										filters[column.name]?.[2],
-									])}
+								onchange={(e) => {
+									if (e.target.value) {
+										filters[column.name] = [
+											e.target.value,
+											e.target.value,
+											filters[column.name]?.[2],
+										];
+									} else {
+										delete filters[column.name];
+									}
+								}}
 							/>
 						{/if}
 
@@ -136,7 +157,13 @@
 	</form>
 {/if}
 <div>
-	{#if selectedTable === "all"}{/if}
+	{#if selectedTable === ""}{:else if selectedTable !== "New thing type"}
+		{#await supabaseQuery then results}
+			{#each results.data as result}
+				<p>{JSON.stringify(result)}</p>
+			{/each}
+		{/await}
+	{/if}
 </div>
 
 <style lang="sass">
