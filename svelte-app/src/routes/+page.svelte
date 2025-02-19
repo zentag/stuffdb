@@ -100,8 +100,8 @@
 							class="rangecheck"
 							onchange={(e) => {
 								filters[column.name] = [
-									filters[column.name]?.[0],
-									filters[column.name]?.[1],
+									null,
+									null,
 									filters[column.name]?.[2] ? false : true,
 								];
 							}}
