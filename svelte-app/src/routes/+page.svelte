@@ -14,13 +14,21 @@
 	let supabaseQuery = $state();
 	$effect(() => {
 		let buildingQuery = supabase.from(selectedTable).select();
-		Object.keys(filters).forEach((key) => {
+		Object.keys(filters).forEach(async (key) => {
 			const filter = filters[key];
 			if (filter[0]) {
 				buildingQuery = buildingQuery.gte(key, filter[0]);
 			}
 			if (filter[1]) {
 				buildingQuery = buildingQuery.lte(key, filter[1]);
+			}
+			if (filter.constructor === Object) {
+				let searchString = "";
+				Object.keys(filter).forEach((k) => {
+					if (filter[k]) searchString += ` | '${k}'`;
+				});
+				searchString = searchString.slice(3);
+				buildingQuery = buildingQuery.textSearch(key, searchString);
 			}
 		});
 		supabaseQuery = buildingQuery;
@@ -106,22 +114,30 @@
 								];
 							}}
 						/>
-					{:else if column.type === "text" && column.name !== "name"}
+					{:else if column.name === "name"}{:else if column.type === "text" && column.name !== "name"}
 						<details class="dropdown">
 							<summary>{column.name}</summary>
 							<ul>
 								{#await supabase
 									.from(selectedTable)
 									.select(column.name) then values}
-									{#each values.data as value}
+									{#each [...new Set(values.data.map((val) => Object.keys(val).map((key) => val[key])[0]))] as value}
 										<li>
 											<label class="checkboxlabel">
 												<input
 													type="checkbox"
-													name={value[column.name]}
 													class="checkbox"
+													onchange={() => {
+														if (!filters[column.name])
+															filters[column.name] = {};
+														filters[column.name][value] = filters[
+															column.name
+														]?.[value]
+															? false
+															: true;
+													}}
 												/>
-												<p class="checkboxlabel">{value[column.name]}</p></label
+												<p class="checkboxlabel">{value}</p></label
 											>
 										</li>
 									{/each}
@@ -135,7 +151,11 @@
 			</div>
 			<div class="searchdiv">
 				{#if selectedTable !== "New thing type"}
-					<input placeholder="search..." class="search" />
+					<input
+						placeholder="search..."
+						class="search"
+						onchange={(e) => (filters.name = e.target.value)}
+					/>
 					{#if table.data[0]}
 						<button>New column</button>
 					{/if}
