@@ -10,9 +10,11 @@ export async function update_index() {
   // work around to upload after everything gets processed
   const tables = [...realTables, { schema: "public", tablename: "empty" }];
   let algoliaObjects = [];
+  let facetAttributes = [];
   tables.forEach(async (table, index, array) => {
     const data = (await supabase.from(table.tablename).select()).data.map(
       (row) => {
+        facetAttributes = [...facetAttributes, ...Object.keys(row)];
         return {
           objectID: row.id,
           ...row,
@@ -25,6 +27,19 @@ export async function update_index() {
       await client.saveObjects({
         indexName: "stuff",
         objects: algoliaObjects,
+      });
+      const facetAttributesFiltered = [
+        "table",
+        ...new Set(
+          facetAttributes.filter((attr) => {
+            if (attr === "name" || attr === "id") return false;
+            else return true;
+          }),
+        ),
+      ];
+      await client.setSettings({
+        indexName: "stuff",
+        indexSettings: { attributesForFaceting: facetAttributesFiltered },
       });
     }
   });
