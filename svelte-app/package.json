@@ -28,6 +28,8 @@
 	},
 	"dependencies": {
 		"@picocss/pico": "^2.0.6",
-		"@supabase/supabase-js": "^2.48.1"
+		"@supabase/supabase-js": "^2.48.1",
+		"algoliasearch": "^5.20.3",
+		"svelte-algolia-instantsearch": "^0.12.1"
 	}
 }

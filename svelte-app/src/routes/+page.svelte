@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { update_index } from "$lib/util/algolia";
+	import { client } from "$lib/util/algolia";
 	import { auth, supabase } from "$lib/supabase";
 	import Login from "$lib/components/login.svelte";
 	let selectedTable = $state("");
@@ -12,6 +14,14 @@
 	}
 	$inspect(filters);
 	let supabaseQuery = $state();
+	$effect(async () => {
+		update_index();
+		const response = await client.searchSingleIndex({
+			indexName: "stuff",
+			searchParams: { facetFilters: ["mount:SMD"] },
+		});
+		console.log(response);
+	});
 	$effect(() => {
 		let buildingQuery = supabase.from(selectedTable).select();
 		Object.keys(filters).forEach(async (key) => {
@@ -37,7 +47,7 @@
 
 {#await auth.getUser() then user}
 	{#if user.data.user}
-		{#await supabase.rpc("list_tables" + selectedTable.slice(0, 0)) then tables}
+		{#await supabase.rpc("list_tables" + selectedTable.slice(0, 0) /*This is to make this update on selected table change*/) then tables}
 			<div class="header">
 				<h1>StuffDB</h1>
 				<select
@@ -54,6 +64,12 @@
 					<option>New thing type</option>
 				</select>
 			</div>
+			<button
+				onclick={async () => {
+					const res = await supabase.functions.invoke("algolia");
+					console.log(res);
+				}}>Refresh search index</button
+			>
 		{/await}
 		{#await supabase.rpc("get_cols", { tablename: selectedTable }) then table}
 			<div id="options">
