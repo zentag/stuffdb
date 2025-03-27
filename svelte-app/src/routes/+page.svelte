@@ -6,6 +6,7 @@
 	let selectedTable = $state("");
 	let newTableName = $state("");
 	let filters = $state({});
+	let algoliaFilters = $state("");
 	async function newTable() {
 		await supabase.rpc("create_table", {
 			name: newTableName,
@@ -18,31 +19,38 @@
 		update_index();
 		const response = await client.searchSingleIndex({
 			indexName: "stuff",
-			searchParams: { facetFilters: ["mount:SMD"] },
+			searchParams: { filters: algoliaFilters },
 		});
 		console.log(response);
 	});
 	$effect(() => {
-		let buildingQuery = supabase.from(selectedTable).select();
+		let tempFilters = "";
 		Object.keys(filters).forEach(async (key) => {
 			const filter = filters[key];
 			if (filter[0]) {
-				buildingQuery = buildingQuery.gte(key, filter[0]);
+				tempFilters += `${key} >= ${filter[0]} AND `;
 			}
 			if (filter[1]) {
-				buildingQuery = buildingQuery.lte(key, filter[1]);
+				tempFilters += `${key} <= ${filter[1]} AND `;
 			}
+			// text filter
 			if (filter.constructor === Object) {
 				let searchString = "";
 				Object.keys(filter).forEach((k) => {
-					if (filter[k]) searchString += ` | '${k}'`;
+					if (filter[k]) tempFilters += `${key}:'${k}' OR `;
 				});
-				searchString = searchString.slice(3);
-				buildingQuery = buildingQuery.textSearch(key, searchString);
 			}
 		});
-		supabaseQuery = buildingQuery;
+		// workaround to bypass the OR statement from text statements
+		if (selectedTable) {
+			if (tempFilters.split("OR").pop() == " ")
+				tempFilters = tempFilters.slice(0, -3) + "AND ";
+			tempFilters += `table: ${selectedTable}`;
+			algoliaFilters = tempFilters;
+		} else algoliaFilters = "";
 	});
+	$inspect(selectedTable);
+	$inspect(algoliaFilters);
 </script>
 
 {#await auth.getUser() then user}
@@ -55,7 +63,7 @@
 					aria-label="select thing type..."
 					bind:value={selectedTable}
 				>
-					<option selected disabled value="">all</option>
+					<option selected value="">all</option>
 					{#each tables.data as table}
 						<option>
 							{table.tablename.split("_").join(" ")}
@@ -194,11 +202,7 @@
 {/if}
 <div>
 	{#if selectedTable === ""}{:else if selectedTable !== "New thing type"}
-		{#await supabaseQuery then results}
-			{#each results.data as result}
-				<p>{JSON.stringify(result)}</p>
-			{/each}
-		{/await}
+		<p>TODO: show results</p>
 	{/if}
 </div>
 
