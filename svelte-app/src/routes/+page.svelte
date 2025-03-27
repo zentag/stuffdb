@@ -2,26 +2,26 @@
 	import { update_index } from "$lib/util/algolia";
 	import { client } from "$lib/util/algolia";
 	import { auth, supabase } from "$lib/supabase";
+	import type { SearchResponse } from "algoliasearch";
 	import Login from "$lib/components/login.svelte";
 	let selectedTable = $state("");
 	let newTableName = $state("");
 	let filters = $state({});
 	let algoliaFilters = $state("");
+	let algoliaResults = $state(Promise<SearchResponse<unknown>>);
+	let algoliaSearchText = $state("");
 	async function newTable() {
 		await supabase.rpc("create_table", {
 			name: newTableName,
 		});
 		selectedTable = "";
 	}
-	$inspect(filters);
-	let supabaseQuery = $state();
-	$effect(async () => {
+	$effect(() => {
 		update_index();
-		const response = await client.searchSingleIndex({
+		algoliaResults = client.searchSingleIndex({
 			indexName: "stuff",
-			searchParams: { filters: algoliaFilters },
+			searchParams: { filters: algoliaFilters, query: algoliaSearchText },
 		});
-		console.log(response);
 	});
 	$effect(() => {
 		let tempFilters = "";
@@ -49,8 +49,6 @@
 			algoliaFilters = tempFilters;
 		} else algoliaFilters = "";
 	});
-	$inspect(selectedTable);
-	$inspect(algoliaFilters);
 </script>
 
 {#await auth.getUser() then user}
@@ -178,7 +176,7 @@
 					<input
 						placeholder="search..."
 						class="search"
-						onchange={(e) => (filters.name = e.target.value)}
+						onchange={(e) => (algoliaSearchText = e.target.value)}
 					/>
 					{#if table.data[0]}
 						<button>New column</button>
@@ -202,7 +200,11 @@
 {/if}
 <div>
 	{#if selectedTable === ""}{:else if selectedTable !== "New thing type"}
-		<p>TODO: show results</p>
+		{#await algoliaResults then res}
+			{#each res.hits as hit}
+				<p>{JSON.stringify(hit)}</p>
+			{/each}
+		{/await}
 	{/if}
 </div>
 
