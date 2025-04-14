@@ -4,14 +4,13 @@
 	import { auth, supabase } from "$lib/supabase";
 	import type { SearchResponse } from "algoliasearch";
 	import Login from "$lib/components/login.svelte";
+	import NewColumn from "$lib/components/new_column.svelte";
 	let selectedTable = $state("");
 	let newTableName = $state("");
 	let filters = $state({});
 	let algoliaFilters = $state("");
 	let algoliaResults = $state<Promise<SearchResponse<unknown>>>();
 	let algoliaSearchText = $state("");
-	let newColumnName = $state("");
-	let newColumnDatatype = $state("");
 	async function newTable() {
 		await supabase.rpc("create_table", {
 			name: newTableName,
@@ -174,44 +173,7 @@
 						oninput={(e) => (algoliaSearchText = e.target.value)}
 					/>
 					{#if table.data[0]}
-						<div>
-							<input
-								placeholder="Column Name..."
-								id="new_col_input"
-								bind:value={newColumnName}
-							/>
-							<select bind:value={newColumnDatatype}>
-								<option selected disabled value="">Datatype</option>
-								<option>int2</option>
-								<option>int4</option>
-								<option>int8</option>
-								<option>float4</option>
-								<option>float8</option>
-								<option>numeric</option>
-								<option>json</option>
-								<option>jsonb</option>
-								<option>text</option>
-								<option>varchar</option>
-								<option>uuid</option>
-								<option>date</option>
-								<option>time</option>
-								<option>timetz</option>
-								<option>timestamp</option>
-								<option>timestamptz</option>
-								<option>bool</option>
-								<option>bytes</option>
-							</select>
-							<button
-								onclick={async () => {
-									await supabase.rpc("create_column", {
-										tablename: selectedTable,
-										name: newColumnName,
-										datatype: "text",
-									});
-									console.log("h");
-								}}>New column</button
-							>
-						</div>
+						<NewColumn {selectedTable} />
 					{/if}
 				{/if}
 			</div>
@@ -252,8 +214,6 @@
 </div>
 
 <style lang="sass">
-#new_col_input
-  width:12rem
 #results 
   display: flex
   flex-wrap: wrap
@@ -261,9 +221,10 @@
   width:16rem
   margin: 1rem
 .searchdiv 
-  display: flex 
+  display: flex
   place-content: space-between
   width: 100%
+  align-items:center
 button
   margin-right: 1rem
 #options
