@@ -217,6 +217,7 @@
 #results 
   display: flex
   flex-wrap: wrap
+  justify-content: center
 .result_card
   width:16rem
   margin: 1rem
@@ -224,7 +225,7 @@
   display: flex
   place-content: space-between
   width: 100%
-  align-items:center
+  flex-wrap: wrap
 button
   margin-right: 1rem
 #options
