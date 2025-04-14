@@ -54,6 +54,4 @@ button
   width:8rem
 div 
   display:flex
-  margin-top:1rem
-  margin-left:1rem
 </style>

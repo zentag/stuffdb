@@ -48,6 +48,7 @@
 		{/await}
 		{#await supabase.rpc("get_cols", { tablename: selectedTable }) then table}
 			<Filters {table} bind:algoliaFilters {selectedTable} />
+			<hr id="up" />
 			<div class="searchdiv">
 				{#if selectedTable !== "New thing type"}
 					<input
@@ -60,6 +61,7 @@
 					{/if}
 				{/if}
 			</div>
+			<hr />
 		{/await}
 	{:else}
 		<h1>StuffDB</h1>
@@ -109,6 +111,7 @@
   place-content: space-between
   width: 100%
   flex-wrap: wrap
+  padding-left: 1rem
 button
   margin-right: 1rem
 .header 
@@ -125,4 +128,10 @@ label > p
 select 
  width: 12rem
  margin-left: 1rem
+hr 
+  width: auto
+  margin-left: 1rem
+  margin-right: 1rem
+hr#up 
+  margin-top: 0
 </style>
