@@ -192,11 +192,13 @@
 	</form>
 {/if}
 <div>
-	{#if selectedTable === ""}{:else if selectedTable !== "New thing type"}
+	{#if selectedTable !== "New thing type"}
 		{#await algoliaResults then res}
-			{#each res.hits as hit}
-				<p>{JSON.stringify(hit)}</p>
-			{/each}
+			{#if res?.hits}
+				{#each res.hits as hit}
+					<p>{JSON.stringify(hit)}</p>
+				{/each}
+			{/if}
 		{/await}
 	{/if}
 </div>
