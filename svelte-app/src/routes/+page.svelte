@@ -8,7 +8,7 @@
 	let newTableName = $state("");
 	let filters = $state({});
 	let algoliaFilters = $state("");
-	let algoliaResults = $state(Promise<SearchResponse<unknown>>);
+	let algoliaResults = $state<Promise<SearchResponse<unknown>>>();
 	let algoliaSearchText = $state("");
 	async function newTable() {
 		await supabase.rpc("create_table", {
@@ -35,7 +35,6 @@
 			}
 			// text filter
 			if (filter.constructor === Object) {
-				let searchString = "";
 				Object.keys(filter).forEach((k) => {
 					if (filter[k]) tempFilters += `${key}:'${k}' OR `;
 				});
@@ -70,12 +69,6 @@
 					<option>New thing type</option>
 				</select>
 			</div>
-			<button
-				onclick={async () => {
-					const res = await supabase.functions.invoke("algolia");
-					console.log(res);
-				}}>Refresh search index</button
-			>
 		{/await}
 		{#await supabase.rpc("get_cols", { tablename: selectedTable }) then table}
 			<div id="options">
@@ -86,7 +79,7 @@
 								type="number"
 								placeholder={column.name + ": min"}
 								class="number"
-								onchange={(e) => {
+								oninput={(e) => {
 									filters[column.name] = [
 										e.target.value,
 										filters[column.name]?.[1] || null,
@@ -98,7 +91,7 @@
 								type="number"
 								placeholder={column.name + ": max"}
 								class="number"
-								onchange={(e) => {
+								oninput={(e) => {
 									filters[column.name] = [
 										filters[column.name]?.[0] || null,
 										e.target.value,
@@ -110,7 +103,7 @@
 							<input
 								type="number"
 								placeholder={column.name}
-								onchange={(e) => {
+								oninput={(e) => {
 									if (e.target.value) {
 										filters[column.name] = [
 											e.target.value,
@@ -128,7 +121,7 @@
 						<input
 							type="checkbox"
 							class="rangecheck"
-							onchange={(e) => {
+							oninput={(e) => {
 								filters[column.name] = [
 									null,
 									null,
@@ -149,7 +142,7 @@
 												<input
 													type="checkbox"
 													class="checkbox"
-													onchange={() => {
+													oninput={() => {
 														if (!filters[column.name])
 															filters[column.name] = {};
 														filters[column.name][value] = filters[
@@ -176,7 +169,7 @@
 					<input
 						placeholder="search..."
 						class="search"
-						onchange={(e) => (algoliaSearchText = e.target.value)}
+						oninput={(e) => (algoliaSearchText = e.target.value)}
 					/>
 					{#if table.data[0]}
 						<button>New column</button>
