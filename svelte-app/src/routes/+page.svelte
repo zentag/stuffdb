@@ -10,6 +10,8 @@
 	let algoliaFilters = $state("");
 	let algoliaResults = $state<Promise<SearchResponse<unknown>>>();
 	let algoliaSearchText = $state("");
+	let newColumnName = $state("");
+	let newColumnDatatype = $state("");
 	async function newTable() {
 		await supabase.rpc("create_table", {
 			name: newTableName,
@@ -172,7 +174,44 @@
 						oninput={(e) => (algoliaSearchText = e.target.value)}
 					/>
 					{#if table.data[0]}
-						<button>New column</button>
+						<div>
+							<input
+								placeholder="Column Name..."
+								id="new_col_input"
+								bind:value={newColumnName}
+							/>
+							<select bind:value={newColumnDatatype}>
+								<option selected disabled value="">Datatype</option>
+								<option>int2</option>
+								<option>int4</option>
+								<option>int8</option>
+								<option>float4</option>
+								<option>float8</option>
+								<option>numeric</option>
+								<option>json</option>
+								<option>jsonb</option>
+								<option>text</option>
+								<option>varchar</option>
+								<option>uuid</option>
+								<option>date</option>
+								<option>time</option>
+								<option>timetz</option>
+								<option>timestamp</option>
+								<option>timestamptz</option>
+								<option>bool</option>
+								<option>bytes</option>
+							</select>
+							<button
+								onclick={async () => {
+									await supabase.rpc("create_column", {
+										tablename: selectedTable,
+										name: newColumnName,
+										datatype: "text",
+									});
+									console.log("h");
+								}}>New column</button
+							>
+						</div>
 					{/if}
 				{/if}
 			</div>
@@ -200,7 +239,7 @@
 						<article class="result_card">
 							<h4>{hit.name || hit.table}</h4>
 							{#each Object.keys(hit) as key}
-								{#if key !== "_highlightResult" && key !== "objectID" && key !== "id" && (key !== "table" || selectedTable == "")}
+								{#if key !== "_highlightResult" && key !== "name" && key !== "objectID" && key !== "id" && (key !== "table" || selectedTable == "")}
 									<p><b>{key}:</b> {hit[key]}</p>
 								{/if}
 							{/each}
@@ -213,6 +252,8 @@
 </div>
 
 <style lang="sass">
+#new_col_input
+  width:12rem
 #results 
   display: flex
   flex-wrap: wrap
