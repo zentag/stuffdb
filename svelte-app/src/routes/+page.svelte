@@ -116,7 +116,8 @@ button
   margin-right: 1rem
 .header 
   display: flex
-  margin-top:1rem
+  margin-top: 1rem
+  margin-left: 1rem
   align-items: center
 .search 
   width: 21.5rem
