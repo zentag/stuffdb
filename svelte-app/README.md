@@ -1,38 +1,31 @@
-# sv
+# StuffDB
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+Right now it's just a frontend to algolia and supabase... I'll update soon with functionality for things like WLED to locate stuff.
 
-## Creating a project
+## Setup (local)
 
-If you're seeing this, you've probably already done this step. Congrats!
+- Open a supabase account. The free tier will work, but just keep in mind you will need to visit the dashboard to unpause your project if it's inactive for a week.
+  - Find your project credentials (App ID and public key (formerly known as anon key))
+  - Paste them into the file titled `.env` in the root of this project (there will be slots indicated in the file)
+- Setup your postgres database by visiting the supabase SQL editor and pasting the sql from [setup.sql](https://raw.githubusercontent.com/zentag/stuffdb/refs/heads/main/setup.sql)
+- Open an algolia account
+  - Select "yes" when it asks if you write code
+  - Select "no, I don't use these" when it asks about platforms
+  - Select "other" in industry selections
+  - Select "product search" in usecase selections
+  - Select "code (connect with API)" to import data
+  - Select JavaScript in API language selection
+  - Scroll down to the code snipped, and find the following line
+    `const client = algoliasearch('<YOUR ALGOLIA APP ID HERE>', '<YOUR ALGOLIA KEY HERE>');`
+  - Copy the app ID and key
+  - Paste them into the file titled `.env` in the root of this project (there will be slots indicated in the file)
+- Start the app!
+  - In your terminal (with [pnpm](https://pnpm.io/) installed), run `pnpm i && pnpm build && pnpm preview`
 
-```bash
-# create a new project in the current directory
-npx sv create
+## Contributing
 
-# create a new project in my-app
-npx sv create my-app
-```
+I'm open to contributions. Add anything you want and push it - I'll probably accept it with a quick review.
 
-## Developing
+## Support
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+I'm happy to help anyone out. Just shoot me a message on github.
