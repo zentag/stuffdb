@@ -48,10 +48,10 @@
 
 <style lang="sass">
 input, select, button
-  width:12rem
-  margin-right:1rem
+  width: 12rem
+  margin-right: 1rem
 button
-  width:8rem
+  width: 8rem
 div 
-  display:flex
+  display: flex
 </style>
