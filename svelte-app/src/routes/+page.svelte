@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { update_index } from "$lib/util/algolia";
 	import { client } from "$lib/util/algolia";
 	import { auth, supabase } from "$lib/supabase";
 	import type { SearchResponse } from "algoliasearch";
@@ -17,13 +16,6 @@
 		});
 		selectedTable = "";
 	}
-	$effect(() => {
-		update_index();
-		algoliaResults = client.searchSingleIndex({
-			indexName: "stuff",
-			searchParams: { filters: algoliaFilters, query: algoliaSearchText },
-		});
-	});
 </script>
 
 {#await auth.getUser() then user}
