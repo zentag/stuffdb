@@ -16,6 +16,12 @@
 		});
 		selectedTable = "";
 	}
+	$effect(() => {
+		algoliaResults = client.searchSingleIndex({
+			indexName: "stuff",
+			searchParams: { filters: algoliaFilters, query: algoliaSearchText },
+		});
+	});
 </script>
 
 {#await auth.getUser() then user}
