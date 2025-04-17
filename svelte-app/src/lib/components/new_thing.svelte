@@ -6,11 +6,8 @@
 	let { table, selectedTable } = $props();
 
 	async function add_thing() {
-		console.log(data);
-		console.log(
-			await supabase.from(selectedTable).insert({ id: uuid(), ...data }),
-		);
-		data = {};
+		await supabase.from(selectedTable).insert({ id: uuid(), ...data }),
+			(data = {});
 	}
 </script>
 
