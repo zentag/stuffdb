@@ -4,23 +4,10 @@ import { algoliasearch } from "algoliasearch";
 import { supabase } from "$lib/supabase";
 
 export const load: PageServerLoad = async ({ params }) => {
-  let client;
-  switch (import.meta.env.VITE_HOSTING_LOCATION) {
-    case "netlify":
-      client = algoliasearch(
-        import.meta.env.VITE_ALGOLIA_APP_ID,
-        process.env.ALGOLIA_ADMIN_KEY,
-      );
-      break;
-    case "local":
-      client = algoliasearch(
-        import.meta.env.VITE_ALGOLIA_APP_ID,
-        import.meta.env.VITE_ALGOLIA_ADMIN_KEY,
-      );
-      break;
-    default:
-      error(500, "Something went wrong");
-  }
+  const client = algoliasearch(
+    import.meta.env.VITE_ALGOLIA_APP_ID,
+    import.meta.env.VITE_ALGOLIA_ADMIN_KEY,
+  );
   const realTables = (await supabase.rpc("list_tables")).data;
   // work around to upload after everything gets processed
   const tables = [...realTables];
