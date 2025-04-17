@@ -1,8 +1,8 @@
 import { algoliasearch } from "algoliasearch";
 import { supabase } from "$lib/supabase";
 export const client = algoliasearch(
-  "SRC6WYM3HX",
-  "068a9e612ca8a12b04aed09540882236",
+  import.meta.env.VITE_ALGOLIA_APP_ID,
+  import.meta.env.VITE_ALGOLIA_API_KEY,
 );
 
 export async function update_index() {

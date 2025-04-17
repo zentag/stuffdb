@@ -131,9 +131,9 @@
   flex-columns: 2
   flex-wrap: wrap
   align-items: center
-input[type=number], input[type=text], select
+input[type=number], input[type=text]
   width:12rem
-p:not(.checkboxlabel), select, input:not([type=checkbox]), button, h1, details
+p:not(.checkboxlabel), input:not([type=checkbox]), details
   margin-top: 1rem
   margin-left: 1rem
 label > p 
