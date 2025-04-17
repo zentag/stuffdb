@@ -27,7 +27,7 @@
 				tempFilters = tempFilters.slice(0, -3) + "AND ";
 			tempFilters += `table: ${selectedTable}`;
 			algoliaFilters = tempFilters;
-		} else algoliaFilters.filters = "";
+		} else algoliaFilters = "";
 	});
 </script>
 

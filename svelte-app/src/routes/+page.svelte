@@ -5,11 +5,13 @@
 	import Login from "$lib/components/login.svelte";
 	import Filters from "$lib/components/filters.svelte";
 	import NewColumn from "$lib/components/new_column.svelte";
+	import NewThing from "$lib/components/new_thing.svelte";
 	let selectedTable = $state("");
 	let newTableName = $state("");
 	let algoliaFilters = $state("");
 	let algoliaResults = $state<Promise<SearchResponse<unknown>>>();
 	let algoliaSearchText = $state("");
+	let showNewThing = $state(false);
 	async function newTable() {
 		await supabase.rpc("create_table", {
 			name: newTableName,
@@ -45,9 +47,28 @@
 			</div>
 		{/await}
 		{#await supabase.rpc("get_cols", { tablename: selectedTable }) then table}
-			<Filters {table} bind:algoliaFilters {selectedTable} />
-
 			{#if selectedTable !== "New thing type"}
+				{#if selectedTable !== ""}
+					<fieldset role="group">
+						<input
+							value="Filters"
+							type="button"
+							class={showNewThing ? "outline" : ""}
+							onclick={() => (showNewThing = false)}
+						/>
+						<input
+							value="Add New Thing"
+							type="button"
+							class={showNewThing ? "" : "outline"}
+							onclick={() => (showNewThing = true)}
+						/>
+					</fieldset>
+				{/if}
+				{#if showNewThing}
+					<NewThing {table} {selectedTable} />
+				{:else}
+					<Filters {table} bind:algoliaFilters {selectedTable} />
+				{/if}
 				<hr id="up" />
 				<div class="searchdiv">
 					<input
@@ -98,6 +119,10 @@
 </div>
 
 <style lang="sass">
+fieldset 
+  margin-left: 1rem 
+  margin-right: 1rem
+  width: auto
 #results 
   display: flex
   flex-wrap: wrap

@@ -1,4 +1,3 @@
-import { error } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 import { algoliasearch } from "algoliasearch";
 import { supabase } from "$lib/supabase";

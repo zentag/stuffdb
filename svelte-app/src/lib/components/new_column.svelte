@@ -4,9 +4,6 @@
 	let newColumnName = $state("");
 	let newColumnDatatype = $state("");
 	let { selectedTable = $bindable() } = $props();
-	$inspect(newColumnName);
-	$inspect(newColumnDatatype);
-	$inspect(props);
 </script>
 
 <div>
