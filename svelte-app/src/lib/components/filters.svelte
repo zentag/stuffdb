@@ -29,7 +29,6 @@
 			algoliaFilters = tempFilters;
 		} else algoliaFilters.filters = "";
 	});
-	$inspect(algoliaFilters);
 </script>
 
 <div id="options">
