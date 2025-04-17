@@ -49,7 +49,7 @@
 			let savedSelectedTable = selectedTable;
 			selectedTable = "";
 			selectedTable = savedSelectedTable;
-		}}>New column</button
+		}}>Add</button
 	>
 </div>
 
@@ -57,6 +57,7 @@
 input, select, button
   width: 12rem
   margin-right: 1rem
+  height: 3.1rem
 button
   width: 8rem
 div 
