@@ -28,6 +28,10 @@ Right now it's just a frontend to algolia and supabase... I'll update soon with 
   - Paste them into the file titled `.env` in the `svelte-app` folder of this project (there will be slots indicated in the file)
 - Start the app!
   - In your terminal (with [pnpm](https://pnpm.io/) installed), run `pnpm i && pnpm build && pnpm preview`
+- Finish configuration
+  - Go to algolia's dashboard homepage, and click API Keys
+    ![An image highlighting which button to click on the dashboard](https://github.com/zentag/stuffdb/blob/main/image.jpg?raw=true)
+  - Copy the search only key and paste it into the .env file
 
 ## Contributing
 
