@@ -57,7 +57,7 @@
 						oninput={(e) => (algoliaSearchText = e.target.value)}
 					/>
 					{#if table.data[0]}
-						<NewColumn {selectedTable} />
+						<NewColumn bind:selectedTable />
 					{/if}
 				{/if}
 			</div>

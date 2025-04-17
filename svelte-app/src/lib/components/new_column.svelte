@@ -1,8 +1,9 @@
 <script>
 	import { supabase } from "$lib/supabase";
+	import { goto } from "$app/navigation";
 	let newColumnName = $state("");
 	let newColumnDatatype = $state("");
-	let props = $props();
+	let { selectedTable = $bindable() } = $props();
 	$inspect(newColumnName);
 	$inspect(newColumnDatatype);
 	$inspect(props);
@@ -37,11 +38,17 @@
 	</select>
 	<button
 		onclick={async () => {
-			await supabase.rpc("create_column", {
-				tablename: props.selectedTable,
-				name: newColumnName,
-				datatype: newColumnDatatype,
-			});
+			if (newColumnName !== "" && newColumnDatatype !== "")
+				await supabase.rpc("create_column", {
+					tablename: selectedTable,
+					name: newColumnName,
+					datatype: newColumnDatatype,
+				});
+			newColumnName = "";
+			newColumnDatatype = "";
+			let savedSelectedTable = selectedTable;
+			selectedTable = "";
+			selectedTable = savedSelectedTable;
 		}}>New column</button
 	>
 </div>
