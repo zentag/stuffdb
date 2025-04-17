@@ -49,20 +49,10 @@
   align-items: center
 input[type=number], input[type=text]
   width:12rem
-p:not(.checkboxlabel), input:not([type=checkbox]), details
+input:not([type=checkbox])
   margin-top: 1rem
   margin-left: 1rem
 button 
   margin-left: 1rem
-label > p 
-  margin-bottom: -.5rem
-label.checkboxlabel 
-  display: flex
-  align-items: center
-.rangecheck
-  margin-left: 1rem 
-  margin-top: 0rem !important
-input[type=checkbox]
-  margin-top: .4rem
 
 </style>

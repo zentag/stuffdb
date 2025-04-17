@@ -49,7 +49,7 @@
 		{#await supabase.rpc("get_cols", { tablename: selectedTable }) then table}
 			{#if selectedTable !== "New thing type"}
 				{#if selectedTable !== ""}
-					<fieldset role="group">
+					<div role="group" class="group">
 						<input
 							value="Filters"
 							type="button"
@@ -62,7 +62,7 @@
 							class={showNewThing ? "" : "outline"}
 							onclick={() => (showNewThing = true)}
 						/>
-					</fieldset>
+					</div>
 				{/if}
 				{#if showNewThing}
 					<NewThing {table} {selectedTable} />
@@ -119,9 +119,8 @@
 </div>
 
 <style lang="sass">
-fieldset 
+.group
   margin-left: 1rem 
-  margin-right: 1rem
   width: auto
 #results 
   display: flex
