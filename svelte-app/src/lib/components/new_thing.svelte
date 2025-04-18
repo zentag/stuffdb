@@ -1,9 +1,8 @@
 <script lang="ts">
-	import { supabase } from "$lib/supabase";
 	import { v4 as uuid } from "uuid";
 
 	let data = $state({});
-	let { table, selectedTable } = $props();
+	let { table, selectedTable, supabase } = $props();
 
 	async function add_thing() {
 		await supabase.from(selectedTable).insert({ id: uuid(), ...data });

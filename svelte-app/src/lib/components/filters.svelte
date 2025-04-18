@@ -1,8 +1,11 @@
 <script lang="ts">
-	import { supabase } from "$lib/supabase";
-
 	let filters = $state({});
-	let { table, algoliaFilters = $bindable(), selectedTable } = $props();
+	let {
+		table,
+		algoliaFilters = $bindable(),
+		selectedTable,
+		supabase,
+	} = $props();
 
 	$effect(() => {
 		let tempFilters = "";

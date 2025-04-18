@@ -1,11 +1,11 @@
 import type { PageServerLoad } from "./$types";
+import { PUBLIC_ALGOLIA_APP_ID } from "$env/static/public";
+import { PRIVATE_ALGOLIA_ADMIN_KEY } from "$env/static/private";
 import { algoliasearch } from "algoliasearch";
-import { supabase } from "$lib/supabase";
-
-export const load: PageServerLoad = async ({ params }) => {
+export const load: PageServerLoad = async ({ locals: { supabase } }) => {
   const client = algoliasearch(
-    import.meta.env.VITE_ALGOLIA_APP_ID,
-    import.meta.env.VITE_ALGOLIA_ADMIN_KEY,
+    PUBLIC_ALGOLIA_APP_ID,
+    PRIVATE_ALGOLIA_ADMIN_KEY,
   );
   const realTables = (await supabase.rpc("list_tables")).data;
   // work around to upload after everything gets processed
@@ -26,7 +26,7 @@ export const load: PageServerLoad = async ({ params }) => {
     if (!data) return;
     algoliaObjects = [...algoliaObjects, ...data];
     if (index === array.length - 1) {
-      await client.saveObjects({
+      const indexResponse = await client.saveObjects({
         indexName: "stuff",
         objects: algoliaObjects,
       });
@@ -39,10 +39,11 @@ export const load: PageServerLoad = async ({ params }) => {
           }),
         ),
       ];
-      await client.setSettings({
+      const settingsResponse = await client.setSettings({
         indexName: "stuff",
         indexSettings: { attributesForFaceting: facetAttributesFiltered },
       });
+      return { supabase, indexResponse, settingsResponse };
     }
   });
 };

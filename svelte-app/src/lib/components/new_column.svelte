@@ -1,9 +1,7 @@
 <script>
-	import { supabase } from "$lib/supabase";
-	import { goto } from "$app/navigation";
 	let newColumnName = $state("");
 	let newColumnDatatype = $state("");
-	let { selectedTable = $bindable() } = $props();
+	let { selectedTable = $bindable(), supabase } = $props();
 </script>
 
 <div>

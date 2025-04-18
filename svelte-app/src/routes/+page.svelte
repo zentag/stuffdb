@@ -1,11 +1,13 @@
 <script lang="ts">
+	import type { PageData } from "./$types";
 	import { client } from "$lib/util/algolia";
-	import { auth, supabase } from "$lib/supabase";
 	import type { SearchResponse } from "algoliasearch";
-	import Login from "$lib/components/login.svelte";
 	import Filters from "$lib/components/filters.svelte";
 	import NewColumn from "$lib/components/new_column.svelte";
 	import NewThing from "$lib/components/new_thing.svelte";
+	import Result from "$lib/components/result.svelte";
+	let { data }: { data: PageData } = $props();
+	let { supabase } = $derived(data);
 	let selectedTable = $state("");
 	let newTableName = $state("");
 	let algoliaFilters = $state("");
@@ -26,66 +28,59 @@
 	});
 </script>
 
-{#await auth.getUser() then user}
-	{#if user.data.user}
-		{#await supabase.rpc("list_tables" + selectedTable.slice(0, 0) /*This is to make this update on selected table change*/) then tables}
-			<div class="header">
-				<h1>StuffDB</h1>
-				<select
-					name="select"
-					aria-label="select thing type..."
-					bind:value={selectedTable}
-				>
-					<option selected value="">all</option>
-					{#each tables.data as table}
-						<option>
-							{table.tablename.split("_").join(" ")}
-						</option>
-					{/each}
-					<option>New thing type</option>
-				</select>
-			</div>
-		{/await}
-		{#await supabase.rpc("get_cols", { tablename: selectedTable }) then table}
-			{#if selectedTable !== "New thing type"}
-				{#if selectedTable !== ""}
-					<div role="group" class="group">
-						<input
-							value="Filters"
-							type="button"
-							class={showNewThing ? "outline" : ""}
-							onclick={() => (showNewThing = false)}
-						/>
-						<input
-							value="Add New Thing"
-							type="button"
-							class={showNewThing ? "" : "outline"}
-							onclick={() => (showNewThing = true)}
-						/>
-					</div>
-				{/if}
-				{#if showNewThing}
-					<NewThing {table} {selectedTable} />
-				{:else}
-					<Filters {table} bind:algoliaFilters {selectedTable} />
-				{/if}
-				<hr id="up" />
-				<div class="searchdiv">
-					<input
-						placeholder="search..."
-						class="search"
-						oninput={(e) => (algoliaSearchText = e.target.value)}
-					/>
-					{#if table.data[0]}
-						<NewColumn bind:selectedTable />
-					{/if}
-				</div>
-				<hr />
-			{/if}
-		{/await}
-	{:else}
+{#await supabase.rpc("list_tables" + selectedTable.slice(0, 0) /*This is to make this update on selected table change*/) then tables}
+	<div class="header">
 		<h1>StuffDB</h1>
-		<Login />
+		<select
+			name="select"
+			aria-label="select thing type..."
+			bind:value={selectedTable}
+		>
+			<option selected value="">all</option>
+			{#each tables.data as table}
+				<option>
+					{table.tablename.split("_").join(" ")}
+				</option>
+			{/each}
+			<option>New thing type</option>
+		</select>
+	</div>
+{/await}
+{#await supabase.rpc("get_cols", { tablename: selectedTable }) then table}
+	{#if selectedTable !== "New thing type"}
+		{#if selectedTable !== ""}
+			<div role="group" class="group">
+				<input
+					value="Filters"
+					type="button"
+					class={showNewThing ? "outline" : ""}
+					onclick={() => (showNewThing = false)}
+				/>
+				<input
+					value="Add New Thing"
+					type="button"
+					class={showNewThing ? "" : "outline"}
+					onclick={() => (showNewThing = true)}
+				/>
+			</div>
+		{/if}
+		{#if showNewThing}
+			<NewThing {table} {selectedTable} {supabase} />
+		{:else}
+			<Filters {supabase} {table} bind:algoliaFilters {selectedTable} />
+		{/if}
+		<hr id="up" />
+		<div class="searchdiv">
+			<input
+				placeholder="search..."
+				class="search"
+				oninput={(e) => (algoliaSearchText = e.target.value)}
+			/>
+			{#if selectedTable !== "New thing type" && selectedTable !== ""}
+				<NewColumn {supabase} bind:selectedTable />
+			{/if}
+		</div>
+		<hr />
 	{/if}
 {/await}
 {#if selectedTable == "New thing type"}
@@ -103,14 +98,7 @@
 			{#if res?.hits}
 				<div id="results">
 					{#each res.hits as hit}
-						<article class="result_card">
-							<h4>{hit.name || hit.table}</h4>
-							{#each Object.keys(hit) as key}
-								{#if key !== "_highlightResult" && key !== "name" && key !== "objectID" && key !== "id" && (key !== "table" || selectedTable == "")}
-									<p><b>{key}:</b> {hit[key]}</p>
-								{/if}
-							{/each}
-						</article>
+						<Result {hit} {selectedTable} />
 					{/each}
 				</div>
 			{/if}
@@ -126,9 +114,6 @@
   display: flex
   flex-wrap: wrap
   justify-content: center
-.result_card
-  width:16rem
-  margin: 1rem
 form > button 
  margin-left: 1rem
 .searchdiv 
