@@ -65,7 +65,7 @@
 			</div>
 		{/if}
 		{#if showNewThing}
-			<NewThing {table} {selectedTable} {supabase} />
+			<NewThing {table} bind:selectedTable {supabase} />
 		{:else}
 			<Filters {supabase} {table} bind:algoliaFilters {selectedTable} />
 		{/if}

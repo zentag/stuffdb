@@ -2,11 +2,14 @@
 	import { v4 as uuid } from "uuid";
 
 	let data = $state({});
-	let { table, selectedTable, supabase } = $props();
+	let { table, selectedTable = $bindable(), supabase } = $props();
 
 	async function add_thing() {
 		await supabase.from(selectedTable).insert({ id: uuid(), ...data });
 		data = {};
+		let savedSelectedTable = selectedTable;
+		selectedTable = "";
+		selectedTable = savedSelectedTable;
 	}
 </script>
 
