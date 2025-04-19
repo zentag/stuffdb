@@ -4,7 +4,7 @@
 	let selectedTable = $derived(sharedState.selectedTable);
 	let data = $state({});
 	let useCustom = $state({});
-	let { table = $bindable(), supabase } = $props();
+	let { table, supabase } = $props();
 	$effect(() => {
 		table.data.forEach((column) => {
 			if (data[column.name] == "Use value not on list")
