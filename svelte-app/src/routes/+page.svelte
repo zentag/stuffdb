@@ -116,9 +116,6 @@ button
   margin-left: 1rem
 label > p 
   margin-bottom: 0rem
-select 
- width: 12rem
- margin-left: 1rem
 hr 
   width: auto
   margin-left: 1rem
