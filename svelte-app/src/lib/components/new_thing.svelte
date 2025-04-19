@@ -3,8 +3,14 @@
 	import { sharedState } from "$lib/shared.svelte";
 	let selectedTable = $derived(sharedState.selectedTable);
 	let data = $state({});
+	let useCustom = $state({});
 	let { table = $bindable(), supabase } = $props();
-
+	$effect(() => {
+		table.data.forEach((column) => {
+			if (data[column.name] == "Use value not on list")
+				useCustom[column.name] = true;
+		});
+	});
 	async function add_thing() {
 		await supabase.from(selectedTable).insert({ id: uuid(), ...data });
 		data = {};
@@ -29,7 +35,7 @@
 				}}
 			/>
 		{:else if column.name === "id"}{:else if column.type == "text"}
-			{#if data[column.name] == "Value not on list"}
+			{#if useCustom[column.name]}
 				<input
 					type="text"
 					placeholder={column.name}
@@ -45,8 +51,8 @@
 							</option>
 						{/each}
 					{/await}
-					<option>None</option>
-					<option>Value not on list</option>
+					<option value={null}>None</option>
+					<option>Use value not on list</option>
 				</select>
 			{/if}
 		{:else}
