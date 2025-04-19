@@ -1,11 +1,8 @@
 <script lang="ts">
+	import { sharedState } from "$lib/shared.svelte";
+	let selectedTable = $derived(sharedState.selectedTable);
 	let filters = $state({});
-	let {
-		table,
-		algoliaFilters = $bindable(),
-		selectedTable,
-		supabase,
-	} = $props();
+	let { table, algoliaFilters = $bindable(), supabase } = $props();
 
 	$effect(() => {
 		let tempFilters = "";

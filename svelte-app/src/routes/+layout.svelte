@@ -2,7 +2,7 @@
 	import { invalidate } from "$app/navigation";
 	import { onMount } from "svelte";
 	import "../app.sass";
-
+	import Header from "$lib/components/header.svelte";
 	let { data, children } = $props();
 	let { session, supabase } = $derived(data);
 
@@ -17,4 +17,5 @@
 	});
 </script>
 
+<Header {supabase} />
 {@render children()}

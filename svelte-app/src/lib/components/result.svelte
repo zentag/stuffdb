@@ -1,5 +1,7 @@
 <script lang="ts">
-	let { hit, selectedTable } = $props();
+	import { sharedState } from "$lib/shared.svelte";
+	let selectedTable = $derived(sharedState.selectedTable);
+	let { hit } = $props();
 </script>
 
 <article class="result_card">

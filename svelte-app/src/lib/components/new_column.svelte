@@ -1,7 +1,8 @@
 <script>
+	import { sharedState } from "$lib/shared.svelte";
 	let newColumnName = $state("");
 	let newColumnDatatype = $state("");
-	let { selectedTable = $bindable(), supabase } = $props();
+	let { supabase } = $props();
 </script>
 
 <div>
@@ -41,9 +42,9 @@
 				});
 			newColumnName = "";
 			newColumnDatatype = "";
-			let savedSelectedTable = selectedTable;
-			selectedTable = "";
-			selectedTable = savedSelectedTable;
+			let savedSelectedTable = sharedState.selectedTable;
+			sharedState.selectedTable = "";
+			sharedState.selectedTable = savedSelectedTable;
 		}}>Add</button
 	>
 </div>

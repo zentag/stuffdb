@@ -6,9 +6,10 @@
 	import NewColumn from "$lib/components/new_column.svelte";
 	import NewThing from "$lib/components/new_thing.svelte";
 	import Result from "$lib/components/result.svelte";
+	import { sharedState } from "$lib/shared.svelte";
 	let { data }: { data: PageData } = $props();
 	let { supabase } = $derived(data);
-	let selectedTable = $state("");
+	let selectedTable = $derived(sharedState.selectedTable);
 	let newTableName = $state("");
 	let algoliaFilters = $state("");
 	let algoliaResults = $state<Promise<SearchResponse<unknown>>>();
@@ -18,7 +19,7 @@
 		await supabase.rpc("create_table", {
 			name: newTableName,
 		});
-		selectedTable = "";
+		sharedState.selectedTable = "";
 	}
 	$effect(() => {
 		algoliaResults = client.searchSingleIndex({
@@ -28,24 +29,6 @@
 	});
 </script>
 
-{#await supabase.rpc("list_tables" + selectedTable.slice(0, 0) /*This is to make this update on selected table change*/) then tables}
-	<div class="header">
-		<h1>StuffDB</h1>
-		<select
-			name="select"
-			aria-label="select thing type..."
-			bind:value={selectedTable}
-		>
-			<option selected value="">all</option>
-			{#each tables.data as table}
-				<option>
-					{table.tablename.split("_").join(" ")}
-				</option>
-			{/each}
-			<option>New thing type</option>
-		</select>
-	</div>
-{/await}
 {#await supabase.rpc("get_cols", { tablename: selectedTable }) then table}
 	{#if selectedTable !== "New thing type"}
 		{#if selectedTable !== ""}
@@ -65,9 +48,9 @@
 			</div>
 		{/if}
 		{#if showNewThing}
-			<NewThing {table} bind:selectedTable {supabase} />
+			<NewThing {table} {supabase} />
 		{:else}
-			<Filters {supabase} {table} bind:algoliaFilters {selectedTable} />
+			<Filters {supabase} {table} bind:algoliaFilters />
 		{/if}
 		<hr id="up" />
 		<div class="searchdiv">
@@ -77,7 +60,7 @@
 				oninput={(e) => (algoliaSearchText = e.target.value)}
 			/>
 			{#if selectedTable !== "New thing type" && selectedTable !== ""}
-				<NewColumn {supabase} bind:selectedTable />
+				<NewColumn {supabase} />
 			{/if}
 		</div>
 		<hr />
@@ -98,7 +81,7 @@
 			{#if res?.hits}
 				<div id="results">
 					{#each res.hits as hit}
-						<Result {hit} {selectedTable} />
+						<Result {hit} />
 					{/each}
 				</div>
 			{/if}
@@ -124,11 +107,6 @@ form > button
   padding-left: 1rem
 button
   margin-right: 1rem
-.header 
-  display: flex
-  margin-top: 1rem
-  margin-left: 1rem
-  align-items: center
 .search 
   width: 21.5rem
 .label 

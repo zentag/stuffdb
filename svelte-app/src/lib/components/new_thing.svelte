@@ -1,15 +1,16 @@
 <script lang="ts">
 	import { v4 as uuid } from "uuid";
-
+	import { sharedState } from "$lib/shared.svelte";
+	let selectedTable = $derived(sharedState.selectedTable);
 	let data = $state({});
-	let { table, selectedTable = $bindable(), supabase } = $props();
+	let { table = $bindable(), supabase } = $props();
 
 	async function add_thing() {
 		await supabase.from(selectedTable).insert({ id: uuid(), ...data });
 		data = {};
-		let savedSelectedTable = selectedTable;
-		selectedTable = "";
-		selectedTable = savedSelectedTable;
+		let savedSelectedTable = sharedState.selectedTable;
+		sharedState.selectedTable = "";
+		sharedState.selectedTable = savedSelectedTable;
 	}
 </script>
 
