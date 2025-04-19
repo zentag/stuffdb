@@ -2,11 +2,12 @@
 	import { v4 as uuid } from "uuid";
 	import { sharedState } from "$lib/shared.svelte";
 	let selectedTable = $derived(sharedState.selectedTable);
-	let data = $state({});
-	let useCustom = $state({});
+	let data: { [key: string]: number | string } = $state({});
+	let useCustom: { [key: string]: boolean } = $state({});
 	let { table, supabase } = $props();
+	let tableData: { name: string; type: string }[] = table.data;
 	$effect(() => {
-		table.data.forEach((column) => {
+		tableData.forEach((column) => {
 			if (data[column.name] == "Use value not on list")
 				useCustom[column.name] = true;
 		});
@@ -21,14 +22,14 @@
 </script>
 
 <div id="options">
-	{#each table.data as column}
+	{#each tableData as column}
 		{#if column.type === "smallint"}
 			<input
 				type="number"
 				placeholder={column.name}
 				oninput={(e) => {
-					if (e.target.value) {
-						data[column.name] = e.target.value;
+					if ((e.target as HTMLInputElement)?.value) {
+						data[column.name] = (e.target as HTMLInputElement)?.value;
 					} else {
 						delete data[column.name];
 					}
@@ -39,13 +40,14 @@
 				<input
 					type="text"
 					placeholder={column.name}
-					oninput={(e) => (data[column.name] = e.target.value)}
+					oninput={(e) =>
+						(data[column.name] = (e.target as HTMLInputElement)?.value)}
 				/>
 			{:else}
 				<select aria-label={column.name} bind:value={data[column.name]}>
 					<option selected disabled value="">{column.name}</option>
 					{#await supabase.from(selectedTable).select(column.name) then values}
-						{#each [...new Set(values.data.map((val) => Object.keys(val).map((key) => val[key])[0]))] as value}
+						{#each [...new Set(values.data.map((val: { [key: string]: boolean }) => Object.keys(val).map((key) => val[key])[0]))] as value}
 							<option>
 								{value}
 							</option>
@@ -59,7 +61,8 @@
 			<input
 				type="text"
 				placeholder={column.name}
-				oninput={(e) => (data[column.name] = e.target.value)}
+				oninput={(e) =>
+					(data[column.name] = (e.target as HTMLInputElement)?.value)}
 			/>
 		{/if}
 	{/each}
