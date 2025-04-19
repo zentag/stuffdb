@@ -1,4 +1,5 @@
-# StuffDB 
+# StuffDB
+
 ## Status: WIP
 
 Right now it's just a frontend to algolia and supabase... I'll update soon with functionality for things like WLED to locate stuff.
@@ -29,7 +30,8 @@ Right now it's just a frontend to algolia and supabase... I'll update soon with 
   - Scroll down to the code snipped, and find the following line
     `const client = algoliasearch('<YOUR ALGOLIA APP ID HERE>', '<YOUR ALGOLIA KEY HERE>');`
   - Copy the app ID and key
-  - Paste them into the file titled `.env` in the `svelte-app` folder of this project (there will be slots indicated in the file)
+  - Paste the app ID into the file titled `.env` in the `svelte-app` folder of this project (there will be slots indicated in the file)
+  - Create an .env.local file with the same and write `PRIVATE_ALGOLIA_ADMIN_KEY="your key here"`, making sure to use your key in the quotes NEVER SHARE OR PUBLISH THIS KEY
 - Start the app!
   - In your terminal (with [pnpm](https://pnpm.io/) installed), run `pnpm i && pnpm build && pnpm preview`
 - Finish configuration
