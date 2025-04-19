@@ -16,7 +16,6 @@
 				editableProperties[key] = hit[key];
 		});
 	});
-	$inspect(editableProperties);
 </script>
 
 <article class="result_card">
