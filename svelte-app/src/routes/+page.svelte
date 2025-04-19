@@ -57,7 +57,8 @@
 			<input
 				placeholder="search..."
 				class="search"
-				oninput={(e) => (algoliaSearchText = e.target.value)}
+				oninput={(e) =>
+					(algoliaSearchText = (e.target as HTMLInputElement)?.value || "")}
 			/>
 			{#if selectedTable !== "New thing type" && selectedTable !== ""}
 				<NewColumn {supabase} />
