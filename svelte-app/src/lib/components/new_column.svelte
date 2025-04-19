@@ -36,7 +36,7 @@
 		onclick={async () => {
 			if (newColumnName !== "" && newColumnDatatype !== "")
 				await supabase.rpc("create_column", {
-					tablename: selectedTable,
+					tablename: sharedState.selectedTable,
 					name: newColumnName,
 					datatype: newColumnDatatype,
 				});
