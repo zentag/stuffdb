@@ -2,6 +2,9 @@ import type { PageServerLoad } from "./$types";
 import { PUBLIC_ALGOLIA_APP_ID } from "$env/static/public";
 import { PRIVATE_ALGOLIA_ADMIN_KEY } from "$env/static/private";
 import { algoliasearch } from "algoliasearch";
+type DBRecord = {
+  objectID: string;
+};
 export const load: PageServerLoad = async ({ locals: { supabase } }) => {
   const client = algoliasearch(
     PUBLIC_ALGOLIA_APP_ID,
@@ -10,8 +13,8 @@ export const load: PageServerLoad = async ({ locals: { supabase } }) => {
   const realTables = (await supabase.rpc("list_tables")).data;
   // work around to upload after everything gets processed
   const tables = [...realTables];
-  let algoliaObjects = [];
-  let facetAttributes = [];
+  let algoliaObjects: DBRecord[] = [];
+  let facetAttributes: string[] = [];
   tables.forEach(async (table, index, array) => {
     const data = (await supabase.from(table.tablename).select()).data?.map(
       (row) => {
