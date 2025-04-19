@@ -1,8 +1,18 @@
 <script lang="ts">
 	import { sharedState } from "$lib/shared.svelte";
 	let selectedTable = $derived(sharedState.selectedTable);
-	let filters = $state({});
+	let filters: Filters = $state({});
 	let { table, algoliaFilters = $bindable(), supabase } = $props();
+	let tableData: Column[] = $derived(table.data);
+	type Column = {
+		name: string;
+		type: string;
+	};
+	type Filters = {
+		[key: string]:
+			| [number | null, number | null, boolean]
+			| { [key: string]: boolean };
+	};
 
 	$effect(() => {
 		let tempFilters = "";
@@ -17,6 +27,7 @@
 			// text filter
 			if (filter.constructor === Object) {
 				Object.keys(filter).forEach((k) => {
+					//@ts-expect-error - this is because ts does not know we have checked that it is the object, not the array
 					if (filter[k]) tempFilters += `${key}:'${k}' OR `;
 				});
 			}
@@ -32,7 +43,7 @@
 </script>
 
 <div id="options">
-	{#each table.data as column}
+	{#each tableData as column}
 		{#if column.type === "smallint"}
 			{#if filters[column.name]?.[2]}
 				<input
@@ -41,8 +52,8 @@
 					class="number"
 					oninput={(e) => {
 						filters[column.name] = [
-							e.target.value,
-							filters[column.name]?.[1] || null,
+							Number((e.target as HTMLInputElement)?.value),
+							Number(filters[column.name]?.[1]) || null,
 							true,
 						];
 					}}
@@ -53,8 +64,8 @@
 					class="number"
 					oninput={(e) => {
 						filters[column.name] = [
-							filters[column.name]?.[0] || null,
-							e.target.value,
+							Number(filters[column.name]?.[0]) || null,
+							Number((e.target as HTMLInputElement)?.value),
 							true,
 						];
 					}}
@@ -64,10 +75,10 @@
 					type="number"
 					placeholder={column.name}
 					oninput={(e) => {
-						if (e.target.value) {
+						if ((e.target as HTMLInputElement)?.value) {
 							filters[column.name] = [
-								e.target.value,
-								e.target.value,
+								Number((e.target as HTMLInputElement)?.value),
+								Number((e.target as HTMLInputElement)?.value),
 								filters[column.name]?.[2],
 							];
 						} else {
@@ -81,7 +92,7 @@
 			<input
 				type="checkbox"
 				class="rangecheck"
-				oninput={(e) => {
+				oninput={() => {
 					filters[column.name] = [
 						null,
 						null,
@@ -94,7 +105,7 @@
 				<summary>{column.name}</summary>
 				<ul>
 					{#await supabase.from(selectedTable).select(column.name) then values}
-						{#each [...new Set(values.data.map((val) => Object.keys(val).map((key) => val[key])[0]))] as value}
+						{#each [...new Set(values.data.map((val: { [key: string]: string }) => Object.keys(val).map((key) => val[key])[0]))] as value}
 							<li>
 								<label class="checkboxlabel">
 									<input
@@ -102,9 +113,9 @@
 										class="checkbox"
 										oninput={() => {
 											if (!filters[column.name]) filters[column.name] = {};
-											filters[column.name][value] = filters[column.name]?.[
-												value
-											]
+											// @ts-expect-error - ts can't understand that we're using a set to get unique values, and that value will always be a string.
+											filters[column.name][value] = // @ts-expect-error
+											filters[column.name]?.[value]
 												? false
 												: true;
 										}}
