@@ -82,7 +82,7 @@
 			{#if res?.hits}
 				<div id="results">
 					{#each res.hits as hit}
-						<Result {hit} />
+						<Result {hit} {supabase} />
 					{/each}
 				</div>
 			{/if}
