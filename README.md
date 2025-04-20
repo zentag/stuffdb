@@ -45,6 +45,12 @@ Right now it's just a frontend to algolia and supabase... I'll update soon with 
     ![An image highlighting which button to click on the dashboard](https://github.com/zentag/stuffdb/blob/main/docs/images/algolia_api_keys.png?raw=true)
   - Copy the search only key and paste it into the .env file
 
+### Strange quirks
+
+- Using `text` type columns offers a dropdown select for filters, while using `varchar` defaults to using custom values (text is for often duplicated values, while varchar is for unique)
+  **You cannot:**
+- Name a column `true` or `false`
+
 ### Contributing
 
 I'm open to contributions. Add anything you want and push it - I'll probably accept it with a quick review.
