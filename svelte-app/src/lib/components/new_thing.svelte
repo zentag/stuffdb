@@ -2,7 +2,9 @@
 	import { v4 as uuid } from "uuid";
 	import { sharedState } from "$lib/shared.svelte";
 	let selectedTable = $derived(sharedState.selectedTable);
-	let data: { [key: string]: number | string } = $state({});
+	let data: { [key: string]: number | string | boolean | undefined } = $state(
+		{},
+	);
 	let useCustom: { [key: string]: boolean } = $state({});
 	let { table, supabase } = $props();
 	let tableData: { name: string; type: string }[] = table.data;
@@ -10,6 +12,8 @@
 		tableData.forEach((column) => {
 			if (data[column.name] == "Use value not on list")
 				useCustom[column.name] = true;
+			if (data[column.name] === undefined && column.type === "boolean")
+				data[column.name] = false;
 		});
 	});
 	async function add_thing() {
@@ -35,6 +39,21 @@
 					}
 				}}
 			/>
+		{:else if column.type == "boolean"}
+			<select
+				oninput={(e) => {
+					const value = (e.target as HTMLInputElement)?.value;
+
+					if (value == "") {
+						data[column.name] = undefined;
+					}
+				}}
+			>
+				<option value="" disabled selected>{column.name}</option>
+				<option>true</option>
+				<option>false</option>
+				<option value="">don't define</option>
+			</select>
 		{:else if column.name === "id"}{:else if column.type == "text"}
 			{#if useCustom[column.name]}
 				<input

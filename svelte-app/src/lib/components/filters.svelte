@@ -24,11 +24,13 @@
 			if (filter[1]) {
 				tempFilters += `${key} <= ${filter[1]} AND `;
 			}
+
 			// text filter
 			if (filter.constructor === Object) {
 				Object.keys(filter).forEach((k) => {
+					if (k === "true" || k === "false") tempFilters += `${key}:${k} OR `;
 					//@ts-expect-error - this is because ts does not know we have checked that it is the object, not the array
-					if (filter[k]) tempFilters += `${key}:'${k}' OR `;
+					else if (filter[k]) tempFilters += `${key}:'${k}' OR `;
 				});
 			}
 		});
@@ -100,6 +102,20 @@
 					];
 				}}
 			/>
+		{:else if column.type == "boolean"}
+			<select
+				oninput={(e) => {
+					const value = (e.target as HTMLInputElement)?.value;
+					if (value === "") delete filters[column.name];
+					else if (value === "true") filters[column.name] = { true: true };
+					else if (value === "false") filters[column.name] = { false: true };
+				}}
+			>
+				<option value="" disabled selected>{column.name}</option>
+				<option>true</option>
+				<option>false</option>
+				<option value="">either</option>
+			</select>
 		{:else if column.name === "name"}{:else if column.type === "text" && column.name !== "name"}
 			<details class="dropdown">
 				<summary>{column.name}</summary>
@@ -115,9 +131,7 @@
 											if (!filters[column.name]) filters[column.name] = {};
 											// @ts-expect-error - ts can't understand that we're using a set to get unique values, and that value will always be a string.
 											filters[column.name][value] = // @ts-expect-error
-											filters[column.name]?.[value]
-												? false
-												: true;
+												filters[column.name]?.[value] ? false : true;
 										}}
 									/>
 									<p class="checkboxlabel">{value}</p></label
@@ -141,9 +155,9 @@
   flex-columns: 2
   flex-wrap: wrap
   align-items: center
-input[type=number], input[type=text]
+input[type=number], input[type=text], select
   width:12rem
-p:not(.checkboxlabel), input:not([type=checkbox]), details
+p:not(.checkboxlabel), input:not([type=checkbox]), details, select
   margin-top: 1rem
   margin-left: 1rem
 label > p 
