@@ -4,6 +4,11 @@
 
 Right now it's just a frontend to algolia and supabase... I'll update soon with functionality for things like WLED to locate stuff.
 
+### TODO:
+
+- [ ] Make values in new_thing.svelte dissapear after add
+- [ ] Make an API page to refresh the aglolia index: make components that update the db fetch this page
+
 ### Setup (local)
 
 - Open a supabase account. The free tier will work, but just keep in mind you will need to visit the dashboard to unpause your project if it's inactive for a week.
