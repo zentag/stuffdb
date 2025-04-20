@@ -46,7 +46,7 @@ Right now it's just a frontend to algolia and supabase... I'll update soon with 
   - Copy the search only key and paste it into the .env file
   - Still on the Algolia dashboard, click `Search` on the left menu
   - Click `Configuration` near the middle of your screen
-  - Set your attributes that can be searched with algolia here (recommended are `name` and `purpose`)
+  - Set your attributes that can be searched with algolia here (recommended are `name` and `description`)
   - Click `Review and Save Settings` at the bottom right of your screen
 
 ### Strange quirks
