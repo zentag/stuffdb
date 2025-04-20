@@ -13,7 +13,7 @@
 			| [number | null, number | null, boolean]
 			| { [key: string]: boolean };
 	};
-
+	$inspect(tableData);
 	$effect(() => {
 		let tempFilters = "";
 		Object.keys(filters).forEach(async (key) => {
@@ -42,11 +42,23 @@
 			algoliaFilters = tempFilters;
 		} else algoliaFilters = "";
 	});
+	function columnIsNumber(type: string) {
+		if (
+			type === "smallint" ||
+			type === "integer" ||
+			type === "bigint" ||
+			type === "double precision" ||
+			type === "numeric" ||
+			type === "real"
+		)
+			return true;
+		else return false;
+	}
 </script>
 
 <div id="options">
 	{#each tableData as column}
-		{#if column.type === "smallint"}
+		{#if columnIsNumber(column.type)}
 			{#if filters[column.name]?.[2]}
 				<input
 					type="number"

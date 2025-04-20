@@ -23,11 +23,23 @@
 		sharedState.selectedTable = "";
 		sharedState.selectedTable = savedSelectedTable;
 	}
+	function columnIsNumber(type: string) {
+		if (
+			type === "smallint" ||
+			type === "integer" ||
+			type === "bigint" ||
+			type === "double precision" ||
+			type === "numeric" ||
+			type === "real"
+		)
+			return true;
+		else return false;
+	}
 </script>
 
 <div id="options">
 	{#each tableData as column}
-		{#if column.type === "smallint"}
+		{#if columnIsNumber(column.type)}
 			<input
 				type="number"
 				placeholder={column.name}
