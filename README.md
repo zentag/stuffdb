@@ -44,6 +44,10 @@ Right now it's just a frontend to algolia and supabase... I'll update soon with 
   - Go to algolia's dashboard homepage, and click API Keys
     ![An image highlighting which button to click on the dashboard](https://github.com/zentag/stuffdb/blob/main/docs/images/algolia_api_keys.png?raw=true)
   - Copy the search only key and paste it into the .env file
+  - Still on the Algolia dashboard, click `Search` on the left menu
+  - Click `Configuration` near the middle of your screen
+  - Set your attributes that can be searched with algolia here (recommended are `name` and `purpose`)
+  - Click `Review and Save Settings` at the bottom right of your screen
 
 ### Strange quirks
 
