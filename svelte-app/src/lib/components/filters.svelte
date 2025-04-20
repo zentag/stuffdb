@@ -13,7 +13,6 @@
 			| [number | null, number | null, boolean]
 			| { [key: string]: boolean };
 	};
-	$inspect(tableData);
 	$effect(() => {
 		let tempFilters = "";
 		Object.keys(filters).forEach(async (key) => {
