@@ -27,6 +27,7 @@
     ]
   },
   "dependencies": {
+    "@lucide/svelte": "^0.501.0",
     "@picocss/pico": "^2.1.1",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.48.1",
