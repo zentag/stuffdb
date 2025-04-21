@@ -6,7 +6,7 @@ Right now it's just a frontend to algolia and supabase... I'll update soon with 
 
 ### TODO:
 
-- [ ] Make values in new_thing.svelte dissapear after add
+- [x] Make values in new_thing.svelte dissapear after add
 - [ ] Make an API page to refresh the aglolia index: make components that update the db fetch this page
 - [ ] Rewrite result.svelte so that it knows what the column type is when editing (using supabase get_cols() results that can be passed from main page)
 
