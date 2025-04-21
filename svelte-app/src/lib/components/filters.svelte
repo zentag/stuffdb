@@ -133,21 +133,23 @@
 				<ul>
 					{#await supabase.from(selectedTable).select(column.name) then values}
 						{#each [...new Set(values.data.map((val: { [key: string]: string }) => Object.keys(val).map((key) => val[key])[0]))] as value}
-							<li>
-								<label class="checkboxlabel">
-									<input
-										type="checkbox"
-										class="checkbox"
-										oninput={() => {
-											if (!filters[column.name]) filters[column.name] = {};
-											// @ts-expect-error - ts can't understand that we're using a set to get unique values, and that value will always be a string.
-											filters[column.name][value] = // @ts-expect-error
-												filters[column.name]?.[value] ? false : true;
-										}}
-									/>
-									<p class="checkboxlabel">{value}</p></label
-								>
-							</li>
+							{#if value && value !== ""}
+								<li>
+									<label class="checkboxlabel">
+										<input
+											type="checkbox"
+											class="checkbox"
+											oninput={() => {
+												if (!filters[column.name]) filters[column.name] = {};
+												// @ts-expect-error - ts can't understand that we're using a set to get unique values, and that value will always be a string.
+												filters[column.name][value] = // @ts-expect-error
+													filters[column.name]?.[value] ? false : true;
+											}}
+										/>
+										<p class="checkboxlabel">{value}</p></label
+									>
+								</li>
+							{/if}
 						{/each}
 					{/await}
 				</ul>
