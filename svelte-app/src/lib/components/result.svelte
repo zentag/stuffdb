@@ -50,7 +50,11 @@
 				<p><b>{key}:</b> {hit[key]}</p>
 			{/if}
 		{:else}
-			<p><b>{key}:</b> {editableProperties[key] || "null"}</p>
+			<p>
+				<b>{key}:</b>
+				{editableProperties[key] ||
+					(editableProperties[key] === false ? "false" : "null")}
+			</p>
 		{/if}
 	{/each}
 </article>
