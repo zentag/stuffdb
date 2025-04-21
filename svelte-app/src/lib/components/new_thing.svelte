@@ -74,9 +74,11 @@
 					<option selected disabled value="">{column.name}</option>
 					{#await supabase.from(selectedTable).select(column.name) then values}
 						{#each [...new Set(values.data.map((val: { [key: string]: boolean }) => Object.keys(val).map((key) => val[key])[0]))] as value}
-							<option>
-								{value}
-							</option>
+							{#if value && value !== ""}
+								<option>
+									{value}
+								</option>
+							{/if}
 						{/each}
 					{/await}
 					<option value={null}>None</option>
