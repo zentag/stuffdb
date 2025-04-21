@@ -43,13 +43,7 @@
 			<input
 				type="number"
 				placeholder={column.name}
-				oninput={(e) => {
-					if ((e.target as HTMLInputElement)?.value) {
-						data[column.name] = (e.target as HTMLInputElement)?.value;
-					} else {
-						delete data[column.name];
-					}
-				}}
+				bind:value={data[column.name]}
 			/>
 		{:else if column.type == "boolean"}
 			<select
@@ -71,8 +65,7 @@
 				<input
 					type="text"
 					placeholder={column.name}
-					oninput={(e) =>
-						(data[column.name] = (e.target as HTMLInputElement)?.value)}
+					bind:value={data[column.name]}
 				/>
 			{:else}
 				<select aria-label={column.name} bind:value={data[column.name]}>
@@ -92,8 +85,7 @@
 			<input
 				type="text"
 				placeholder={column.name}
-				oninput={(e) =>
-					(data[column.name] = (e.target as HTMLInputElement)?.value)}
+				bind:value={data[column.name]}
 			/>
 		{/if}
 	{/each}
