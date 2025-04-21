@@ -10,8 +10,10 @@
 	let tableData: { name: string; type: string }[] = table.data;
 	$effect(() => {
 		tableData.forEach((column) => {
-			if (data[column.name] == "Use value not on list")
+			if (data[column.name] == "Use value not on list") {
 				useCustom[column.name] = true;
+				data[column.name] = "";
+			}
 			if (data[column.name] === undefined && column.type === "boolean")
 				data[column.name] = false;
 		});
