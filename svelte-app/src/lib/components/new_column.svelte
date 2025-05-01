@@ -13,9 +13,9 @@
 	/>
 	<select bind:value={newColumnDatatype}>
 		<option selected disabled value="">Datatype</option>
-		<option>int2</option>
-		<option>int4</option>
-		<option>int8</option>
+		<option>int2 (-32,768 to 32,767)</option>
+		<option>int4 (-2,147,483,648 to 2,147,483,647)</option>
+		<option>int8 (really quite big)</option>
 		<option>float4</option>
 		<option>float8</option>
 		<option>numeric</option>
