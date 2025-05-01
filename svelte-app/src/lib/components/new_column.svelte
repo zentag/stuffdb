@@ -1,10 +1,14 @@
 <script>
 	import { sharedState } from "$lib/shared.svelte";
+	import ErrorModal from "./error_modal.svelte";
 	let newColumnName = $state("");
 	let newColumnDatatype = $state("");
+	let dialogOpen = $state(false);
+	let errorMsg = $state("");
 	let { supabase } = $props();
 </script>
 
+<ErrorModal bind:dialogOpen {errorMsg} />
 <div>
 	<input
 		placeholder="Column Name..."
@@ -34,12 +38,17 @@
 	</select>
 	<button
 		onclick={async () => {
-			if (newColumnName !== "" && newColumnDatatype !== "")
-				await supabase.rpc("create_column", {
+			if (newColumnName !== "" && newColumnDatatype !== "") {
+				const res = await supabase.rpc("create_column", {
 					tablename: sharedState.selectedTable,
 					name: newColumnName,
 					datatype: newColumnDatatype,
 				});
+				if (res.error) {
+					dialogOpen = true;
+					errorMsg = res.error.message;
+				}
+			}
 			newColumnName = "";
 			newColumnDatatype = "";
 			let savedSelectedTable = sharedState.selectedTable;
