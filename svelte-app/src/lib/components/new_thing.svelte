@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { v4 as uuid } from "uuid";
 	import { sharedState } from "$lib/shared.svelte";
+	import ErrorModal from "./error_modal.svelte";
 	let selectedTable = $derived(sharedState.selectedTable);
 	let data: { [key: string]: number | string | boolean | undefined } = $state(
 		{},
@@ -8,6 +9,8 @@
 	let useCustom: { [key: string]: boolean } = $state({});
 	let { table, supabase } = $props();
 	let tableData: { name: string; type: string }[] = table.data;
+	let dialogOpen = $state(false);
+	let errorMsg = $state("");
 	$effect(() => {
 		tableData.forEach((column) => {
 			if (data[column.name] == "Use value not on list") {
@@ -19,7 +22,16 @@
 		});
 	});
 	async function add_thing() {
-		await supabase.from(selectedTable).insert({ id: uuid(), ...data });
+		if (Object.keys(data).length !== 0) {
+			const res = await supabase
+				.from(selectedTable)
+				.insert({ id: uuid(), ...data });
+			if (res.error) {
+				dialogOpen = true;
+				errorMsg = res.error.message;
+			}
+		}
+
 		data = {};
 		let savedSelectedTable = sharedState.selectedTable;
 		sharedState.selectedTable = "";
@@ -39,6 +51,7 @@
 	}
 </script>
 
+<ErrorModal bind:dialogOpen {errorMsg} />
 <div id="options">
 	{#each tableData as column}
 		{#if columnIsNumber(column.type)}
