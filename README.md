@@ -2,7 +2,8 @@
 
 ## Status: WIP
 
-Right now it's just a frontend to algolia and supabase... I'll update soon with functionality for things like WLED to locate stuff.
+Right now it's just a frontend to algolia and supabase.
+Also, you must refresh several times to update the algolia index (having the item show in results)
 
 ### TODO:
 
@@ -10,7 +11,7 @@ Right now it's just a frontend to algolia and supabase... I'll update soon with 
 - [ ] Make an API page to refresh the aglolia index: make components that update the db fetch this page
 - [ ] Rewrite result.svelte so that it knows what the column type is when editing (using supabase get_cols() results that can be passed from main page)
 - [ ] Add delete button to result.svelte
-- [ ] Fix mobile interface 
+- [ ] Fix mobile interface
 
 ### Setup (local)
 
