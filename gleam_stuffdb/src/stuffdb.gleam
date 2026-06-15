@@ -24,8 +24,41 @@ pub fn main() {
     "
     select * from cats
     "
-  let _ = sqlight.query(sql, on: conn, expecting: decoder, with: [])
-  Ok(echo dynamic_to_string(dynamic.float(10.2)))
+  use dynamic_results <- result.try(
+    sqlight.query(sql, on: conn, expecting: decoder, with: []),
+  )
+  case dynamic_results {
+    [row, ..] -> echo render_row(table_info, row, "")
+    [] -> ""
+  }
+  Ok(Nil)
+}
+
+pub fn render_row(
+  table_info: TableInfo,
+  row: List(dynamic.Dynamic),
+  current: String,
+) {
+  case table_info, row {
+    [col_info, ..cs], [value, ..vs] -> {
+      let cell = render_cell(col_info, value)
+      render_row(cs, vs, current <> cell)
+    }
+    _, _ -> current
+  }
+}
+
+fn render_cell(col_info: ColumnInfo, value: dynamic.Dynamic) {
+  let #(_, datatype, _) = col_info
+  case datatype {
+    "TEXT" -> {
+      let string =
+        result.unwrap(decode.run(value, decode.string), "didn'tdecode")
+      string <> "html"
+    }
+    // HACK: this is for debugging so I can figure out what the types are I haven't handled
+    value -> value
+  }
 }
 
 pub type ColumnInfo =
