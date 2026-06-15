@@ -2,6 +2,8 @@ import gleam/dynamic
 import gleam/dynamic/decode
 import gleam/float
 import gleam/int
+import gleam/list
+import gleam/result
 import sqlight
 
 pub fn main() {
@@ -16,14 +18,39 @@ pub fn main() {
   ('Ginny', 6);
   "
   let _ = sqlight.exec(sql, conn)
-  let _ = echo get_columns("cats", conn)
-  echo dynamic_to_string(dynamic.float(10.2))
+  use table_info <- result.try(get_columns("cats", conn))
+  let decoder = add_column_to_decoder(0, [], list.length(table_info))
+  let sql =
+    "
+    select * from cats
+    "
+  let _ = sqlight.query(sql, on: conn, expecting: decoder, with: [])
+  Ok(echo dynamic_to_string(dynamic.float(10.2)))
+}
+
+pub type ColumnInfo =
+  #(String, String, Int)
+
+pub type TableInfo =
+  List(ColumnInfo)
+
+fn add_column_to_decoder(
+  index: Int,
+  decode_list: List(dynamic.Dynamic),
+  col_number: Int,
+) -> decode.Decoder(List(dynamic.Dynamic)) {
+  use value <- decode.field(index, decode.dynamic)
+  let new_list = list.append(decode_list, [value])
+  case index == col_number - 1 {
+    True -> decode.success(new_list)
+    False -> add_column_to_decoder(index + 1, new_list, col_number)
+  }
 }
 
 fn get_columns(
   table_name: String,
   conn: sqlight.Connection,
-) -> Result(List(#(String, String, Int)), sqlight.Error) {
+) -> Result(TableInfo, sqlight.Error) {
   let decoder = {
     use name <- decode.field(0, decode.string)
     use col_type <- decode.field(1, decode.string)
