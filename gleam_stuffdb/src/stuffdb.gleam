@@ -1,4 +1,7 @@
+import gleam/dynamic
 import gleam/dynamic/decode
+import gleam/float
+import gleam/int
 import sqlight
 
 pub fn main() {
@@ -13,22 +16,42 @@ pub fn main() {
   ('Ginny', 6);
   "
   let _ = sqlight.exec(sql, conn)
+  let _ = echo get_columns("cats", conn)
+  echo dynamic_to_string(dynamic.float(10.2))
+}
 
-  let cat_decoder = {
+fn get_columns(
+  table_name: String,
+  conn: sqlight.Connection,
+) -> Result(List(String), sqlight.Error) {
+  let decoder = {
     use name <- decode.field(0, decode.string)
-    use age <- decode.field(1, decode.int)
-    decode.success(#(name, age))
+    decode.success(name)
   }
 
   let sql =
     "
-  select name, age from cats
-  where age < ?
+    select name from pragma_table_info(?);
   "
-  echo sqlight.query(
+  sqlight.query(
     sql,
     on: conn,
-    with: [sqlight.int(7)],
-    expecting: cat_decoder,
+    with: [sqlight.text(table_name)],
+    expecting: decoder,
   )
+}
+
+fn dynamic_to_string(dyn: dynamic.Dynamic) -> String {
+  case decode.run(dyn, decode.string) {
+    Ok(str) -> str
+    Error(_) ->
+      case decode.run(dyn, decode.int) {
+        Ok(value) -> int.to_string(value)
+        Error(_) ->
+          case decode.run(dyn, decode.float) {
+            Ok(value) -> float.to_string(value)
+            Error(_) -> panic
+          }
+      }
+  }
 }
