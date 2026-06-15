@@ -8,7 +8,7 @@ pub fn main() {
   use conn <- sqlight.with_connection("file:mydb?mode=memory")
   let sql =
     "
-  create table cats (name text, age int);
+  create table cats (name text, age int not null);
 
   insert into cats (name, age) values 
   ('Nubi', 4),
@@ -23,15 +23,17 @@ pub fn main() {
 fn get_columns(
   table_name: String,
   conn: sqlight.Connection,
-) -> Result(List(String), sqlight.Error) {
+) -> Result(List(#(String, String, Int)), sqlight.Error) {
   let decoder = {
     use name <- decode.field(0, decode.string)
-    decode.success(name)
+    use col_type <- decode.field(1, decode.string)
+    use not_null <- decode.field(2, decode.int)
+    decode.success(#(name, col_type, not_null))
   }
 
   let sql =
     "
-    select name from pragma_table_info(?);
+    select name, type, \"notnull\" from pragma_table_info(?);
   "
   sqlight.query(
     sql,
