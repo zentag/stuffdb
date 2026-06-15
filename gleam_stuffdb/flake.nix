@@ -12,6 +12,7 @@
       packages = with pkgs; [
         gleam
         erlang
+        beamPackages.rebar3
       ];
     };
   };
