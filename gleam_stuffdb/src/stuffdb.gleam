@@ -27,14 +27,25 @@ pub fn main() {
   use dynamic_results <- result.try(
     sqlight.query(sql, on: conn, expecting: decoder, with: []),
   )
-  case dynamic_results {
-    [row, ..] -> echo render_row(table_info, row, "")
-    [] -> ""
-  }
+  echo render_table(dynamic_results, table_info, "<table>")
   Ok(Nil)
 }
 
-pub fn render_row(
+pub fn render_table(
+  rows: List(List(dynamic.Dynamic)),
+  table_info: TableInfo,
+  current: String,
+) {
+  case rows {
+    [row, ..new_rows] -> {
+      let current = current <> render_row(table_info, row, "<row>") <> "</row>"
+      render_table(new_rows, table_info, current)
+    }
+    [] -> current <> "</table>"
+  }
+}
+
+fn render_row(
   table_info: TableInfo,
   row: List(dynamic.Dynamic),
   current: String,
@@ -54,7 +65,13 @@ fn render_cell(col_info: ColumnInfo, value: dynamic.Dynamic) {
     "TEXT" -> {
       let string =
         result.unwrap(decode.run(value, decode.string), "didn'tdecode")
-      string <> "html"
+      "<p>" <> string <> "</p>"
+    }
+    "INT" -> {
+      let string =
+        // HACK: change unwrapt to something better
+        int.to_string(result.unwrap(decode.run(value, decode.int), 0))
+      "<p>" <> string <> "</p>"
     }
     // HACK: this is for debugging so I can figure out what the types are I haven't handled
     value -> value
