@@ -7,17 +7,19 @@ import gleam/result
 import sqlight
 
 pub fn main() {
-  use conn <- sqlight.with_connection("file:mydb?mode=memory")
+  use conn <- sqlight.with_connection("stuff.db")
   let sql =
     "
-  create table cats (name text, age int not null);
-
-  insert into cats (name, age) values 
-  ('Nubi', 4),
-  ('Biffy', 10),
-  ('Ginny', 6);
-  "
-  let _ = sqlight.exec(sql, conn)
+    SELECT name FROM sqlite_master WHERE type='table';
+    "
+  let decoder = {
+    use name <- decode.field(0, decode.string)
+    decode.success(name)
+  }
+  use table_names <- result.try(
+    sqlight.query(sql, on: conn, expecting: decoder, with: []),
+  )
+  echo table_names
   use table_info <- result.try(get_columns("cats", conn))
   let decoder = add_column_to_decoder(0, [], list.length(table_info))
   let sql =
