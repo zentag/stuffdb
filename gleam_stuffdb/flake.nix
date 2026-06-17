@@ -7,13 +7,31 @@
   outputs = {nixpkgs, ...}: let
     system = "x86_64-linux";
     pkgs = nixpkgs.legacyPackages.${system};
+    packages = with pkgs; [
+      gleam
+      erlang
+      beamPackages.rebar3
+      watchexec
+    ];
   in {
-    devShell.${system} = pkgs.mkShell {
-      packages = with pkgs; [
-        gleam
-        erlang
-        beamPackages.rebar3
-      ];
+    # TODO: make system independant I guess...
+    devShells = {
+      ${system}.default = pkgs.mkShell {
+        inherit packages;
+      };
+    };
+    apps.${system}.default = {
+      type = "app";
+      inherit packages;
+      program = let
+        dev = pkgs.writeShellApplication {
+          name = "dev";
+          runtimeInputs = packages;
+          text = ''
+            watchexec -e gleam -- gleam run
+          '';
+        };
+      in "${dev}/bin/dev";
     };
   };
 }
